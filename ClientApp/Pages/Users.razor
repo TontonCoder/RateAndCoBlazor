@@ -1,0 +1,29 @@
+﻿@page "/users"
+
+<div class="text-right">
+    <MatButton Outlined="true">Refresh</MatButton>
+    <MatButton Raised="true">New</MatButton>
+</div>
+<h3>Users</h3>
+@if(users != null)
+{
+
+}
+else
+{
+    <p>No User Yet!</p>
+}
+@code {
+    IEnumerable<User> users;
+
+    protected override async Task OnInitAsync()
+    {
+        await refresh();
+    }
+
+    async Task refresh()
+    {
+        //Todo: implements
+    }
+
+}

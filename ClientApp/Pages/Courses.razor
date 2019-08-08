@@ -1,0 +1,102 @@
+﻿@page "/courses"
+@inject ICoursesService coursesService
+
+<h3>Courses</h3>
+<div class="text-right">
+    <MatButton Outlined="true" @onclick="@(() => showNewCourseDialog =true)">New</MatButton>
+    <MatButton Raised="true" @onclick="@(async () => await refresh())">Refresh</MatButton>
+</div>
+@if (courses != null)
+{
+
+    <MatTable Items="courses">
+        <MatTableHeader>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Desc</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.id</td>
+            <td>@context.name</td>
+            <td>@context.description</td>
+            <td>@context.active</td>
+            <td>
+                <MatButton Outlined="true" @onclick="@(() => DeleteClicked(context) )">Delete</MatButton>
+            </td>
+        </MatTableRow>
+    </MatTable>
+}
+else
+{
+    <p>No courses yet.</p>
+}
+
+<MatDialog IsOpen="showNewCourseDialog">
+    <MatDialogTitle>Adding new Course</MatDialogTitle>
+    <MatDialogContent>
+        <MatCard>
+            <MatTextField @bind-Value="@courseSelected.name" HelperText="Name"></MatTextField>
+            <MatTextField @bind-Value="@courseSelected.description" HelperText="Description"></MatTextField>
+            <MatCheckbox @bind-Checked="@courseSelected.active">Active</MatCheckbox>
+        </MatCard>
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton Raised="true" @onclick="@(async () => await addCourse())">Add</MatButton>
+        <MatButton Outlined="true" @onclick="@(() => showNewCourseDialog = false)">Cancel</MatButton>
+    </MatDialogActions>
+</MatDialog>
+
+<MatDialog IsOpen="showConfirmDeleteDialog">
+    <MatDialogTitle>Deleting Course</MatDialogTitle>
+    <MatDialogContent>
+        <MatCard>
+            <div>
+                <p>Delete @courseSelected.name Id:@courseSelected.id?</p>
+            </div>
+        </MatCard>
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton @onclick="@(async () => await DeleteAsync(courseSelected.id))">Confirm</MatButton>
+        <MatButton @onclick="@(() => showConfirmDeleteDialog = false)">Cancel</MatButton>
+    </MatDialogActions>
+</MatDialog>
+
+
+@code {
+    IEnumerable<Course> courses { get; set; }
+    bool showNewCourseDialog = false;
+    bool showConfirmDeleteDialog = false;
+    Course courseSelected = new Course();
+
+    protected override async Task OnInitAsync()
+    {
+        await refresh();
+    }
+    async Task refresh()
+    {
+        courses = await coursesService.GetAll();
+    }
+    async Task addCourse()
+    {
+        showNewCourseDialog = false;
+        await coursesService.Create(courseSelected);
+        await refresh();
+    }
+    void DeleteClicked(Course course)
+    {
+        showConfirmDeleteDialog = true;
+        courseSelected = course;
+
+    }
+    async Task DeleteAsync(int id)
+    {
+        showConfirmDeleteDialog = false;
+        await coursesService.Delete(id);
+        await refresh();
+    }
+
+
+
+}
