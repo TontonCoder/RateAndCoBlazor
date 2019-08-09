@@ -1,20 +1,56 @@
 ﻿@page "/users"
-
+@inject IUsersService usersService
 <div class="text-right">
-    <MatButton Outlined="true">Refresh</MatButton>
-    <MatButton Raised="true">New</MatButton>
+    <MatButton Outlined="true" @onclick="@(async () => await refresh())">Refresh</MatButton>
+    <MatButton Raised="true" @onclick="@(() => showNewDialog = true)">New</MatButton>
 </div>
 <h3>Users</h3>
 @if(users != null)
 {
-
+    <MatTable Items="users">
+        <MatTableHeader>
+            <th>Id</th>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>Role</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.id</td>
+            <td>@context.firstName</td>
+            <td>@context.lastName</td>
+            <td>@context.role</td>
+        </MatTableRow>
+    </MatTable>
 }
 else
 {
     <p>No User Yet!</p>
 }
+<MatDialog IsOpen="showNewDialog">
+    <MatDialogTitle>Adding new user</MatDialogTitle>
+    <MatDialogContent>
+        <MatCard>
+            <MatTextField @bind-Value="userSelected.firstName" HelperText="firstName"></MatTextField>
+            <MatTextField @bind-Value="userSelected.lastName" HelperText="lastName"></MatTextField>
+            <MatTextField @bind-Value="userSelected.username" HelperText="username"></MatTextField>
+            <MatTextField @bind-Value="userSelected.hash" HelperText="password"></MatTextField>
+            <MatSelect @bind-Value="userSelected.role">
+                <MatOption Value="student">student</MatOption>
+                <MatOption Value="trainer">trainer</MatOption>
+                <MatOption Value="admin">admin</MatOption>
+            </MatSelect>
+            <MatCheckbox @bind-value="userSelected.isActive">Active</MatCheckbox>
+        </MatCard>
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton Raised="true" @onclick="@(async () => await AddClicked())">Add</MatButton>
+        <MatButton Outlined="true" @onclick="@(() => showNewDialog = false)">Cancel</MatButton>
+    </MatDialogActions>
+</MatDialog>
 @code {
     IEnumerable<User> users;
+    User userSelected = new User();
+    bool showNewDialog = false;
 
     protected override async Task OnInitAsync()
     {
@@ -23,7 +59,14 @@ else
 
     async Task refresh()
     {
-        //Todo: implements
+
+        users = await usersService.GetAll();
+    }
+
+    async Task AddClicked()
+    {
+        await usersService.Create(userSelected);
+        await refresh();
     }
 
 }

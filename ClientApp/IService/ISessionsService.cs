@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace ClientApp.IService
 {
-    public interface ICoursesService
+    public interface ISessionsService
     {
-        Task<Course> GetCourse(int id); 
-        Task<IEnumerable<Course>> GetAll();
-        Task Create(Course course);
+        Task<IEnumerable<Session>> GetAll();
+        Task Create(Session session);
         Task Delete(int id);
     }
 }

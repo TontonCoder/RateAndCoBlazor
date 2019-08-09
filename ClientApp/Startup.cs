@@ -10,6 +10,8 @@ namespace ClientApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<ICoursesService, CoursesServices>();
+            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<ISessionsService, SessionsService>();
         }
 
         public void Configure(IComponentsApplicationBuilder app)

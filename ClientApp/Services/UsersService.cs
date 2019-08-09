@@ -1,5 +1,6 @@
 ﻿using ClientApp.IService;
 using ClientApp.Models;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +12,24 @@ namespace ClientApp.Services
     public class UsersService : IUsersService
     {
         private HttpClient client;
-        private string url;
-        public Task Create(User user)
+        private string url = "http://localhost:8080/users";
+        public async Task Create(User user)
         {
-            throw new NotImplementedException();
+            client = new HttpClient();
+            await client.PostJsonAsync<User>(url, user);
         }
 
-        public Task Delete(int id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            client = new HttpClient();
+            await client.DeleteAsync(url + "/" + id);
         }
 
-        public Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            throw new NotImplementedException();
+            client = new HttpClient();
+            var users = await client.GetJsonAsync<User[]>(url);
+            return users;
         }
     }
 }

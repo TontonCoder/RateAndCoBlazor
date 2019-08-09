@@ -32,5 +32,11 @@ namespace ClientApp.Services
             var courses = await client.GetJsonAsync<Course[]>(url);
             return courses;
         }
+
+        public async Task<Course> GetCourse(int id)
+        {
+            client = new HttpClient();
+            return await client.GetJsonAsync<Course>(url + "/" + id);
+        }
     }
 }
